@@ -25,6 +25,9 @@ WALL_SIZE = 50;
 BALL_SIZE = 20;
 BALL_SPEED = 300;
 
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+LETTER_TIMER = 3;
+
 function love.load()
   setFullscreen(FULLSCREEN);
   love.mouse.setVisible(false);
@@ -66,10 +69,14 @@ function love.load()
   letter.x = SCREEN_WIDTH / 2;
   letter.y = 280;
   letter.r = 200;
+  letter.visible = false;
   letter.curLetter = "I";
 
   paused = false;
   displayFont = love.graphics.newFont(500);
+  scoreFont = love.graphics.newFont(100);
+  score = 0;
+  letterTimer = LETTER_TIMER;
 end
 
 function setFullscreen(fullscreen)
@@ -165,6 +172,21 @@ function love.gamepadaxis(joystick, axis, value)
 end
 
 function love.update(dt)
+  if letterTimer > 0 and not letter.visible then
+    letterTimer = letterTimer - dt;
+  end
+
+  if letterTimer <= 0 then
+    local index = math.random(string.len(ALPHABET));
+    letter.curLetter = string.sub(ALPHABET, index, index);
+    letter.visible = true;
+    letterTimer = LETTER_TIMER;
+  end
+
+  if letter.visible then
+    
+  end
+
   ball.velocity = 0;
 
   if leftPressed then
@@ -192,10 +214,12 @@ function love.draw()
     love.graphics.polygon("fill", walls.down.body:getWorldPoints(walls.down.shape:getPoints()));
 
     -- Draw Letter
-    love.graphics.setFont(displayFont);
-    love.graphics.setColor(0, 1, 1);
-    love.graphics.circle("line", letter.x, letter.y, letter.r);
-    love.graphics.printf(letter.curLetter, 0, 0, SCREEN_WIDTH, "center");
+    if letter.visible then
+      love.graphics.setFont(displayFont);
+      love.graphics.setColor(0, 1, 1);
+      love.graphics.circle("line", letter.x, letter.y, letter.r);
+      love.graphics.printf(letter.curLetter, 0, 0, SCREEN_WIDTH, "center");
+    end
 
     -- Draw Ball
     love.graphics.setColor(0.47,0,0);
@@ -209,6 +233,11 @@ function love.draw()
     local x2 = math.cos(angle) * BALL_SIZE + x1;
     local y2 = math.sin(angle) * BALL_SIZE + y1;
     love.graphics.line(x1, y1, x2, y2);
+
+    -- Draw score
+    love.graphics.setColor(1, 1, 1);
+    love.graphics.setFont(scoreFont);
+    love.graphics.print(score, 50, 40);
   end);
 
   love.graphics.setColor(1, 1, 1);
