@@ -11,6 +11,8 @@ function love.load()
   world = love.physics.newWorld(0, 9.8*64, true);
 
   createWalls();
+
+  paused = false;
 end
 
 function setFullscreen(fullscreen)
@@ -35,30 +37,34 @@ end
 
 function createWalls()
   walls = {};
+	
+  walls.left = {};
+  walls.left.body = love.physics.newBody(world, WALL_SIZE / 2, SCREEN_HEIGHT / 2);
+  walls.left.shape = love.physics.newRectangleShape(WALL_SIZE, SCREEN_HEIGHT);
+  walls.left.fixture = love.physics.newFixture(walls.left.body, walls.left.shape);
 
-  local ground = {};
-  ground.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT - 25);
-  ground.shape = love.physics.newRectangleShape(SCREEN_WIDTH, 50);
-  ground.fixture = love.physics.newFixture(ground.body, ground.shape);
-  table.insert(walls, ground);
+  walls.right = {};
+  walls.right.body = love.physics.newBody(world, SCREEN_WIDTH - WALL_SIZE / 2, SCREEN_HEIGHT / 2);
+  walls.right.shape = love.physics.newRectangleShape(WALL_SIZE, SCREEN_HEIGHT);
+  walls.right.fixture = love.physics.newFixture(walls.right.body, walls.right.shape);
 
-  local wallLeft = {};
-  wallLeft.body = love.physics.newBody(world, 25, SCREEN_HEIGHT / 2);
-  wallLeft.shape = love.physics.newRectangleShape(50, SCREEN_HEIGHT);
-  wallLeft.fixture = love.physics.newFixture(wallLeft.body, wallLeft.shape);
-  table.insert(walls, wallLeft);
+  walls.up = {};
+  walls.up.body = love.physics.newBody(world, SCREEN_WIDTH / 2, WALL_SIZE / 2);
+  walls.up.shape = love.physics.newRectangleShape(SCREEN_WIDTH, WALL_SIZE);
+  walls.up.fixture = love.physics.newFixture(walls.up.body, walls.up.shape);
 
-  local wallRight = {};
-  wallRight.body = love.physics.newBody(world, SCREEN_WIDTH - 25, SCREEN_HEIGHT / 2);
-  wallRight.shape = love.physics.newRectangleShape(50, SCREEN_HEIGHT);
-  wallRight.fixture = love.physics.newFixture(wallRight.body, wallRight.shape);
-  table.insert(walls, wallRight);
+  walls.down = {};
+  walls.down.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT - WALL_SIZE / 2);
+  walls.down.shape = love.physics.newRectangleShape(SCREEN_WIDTH, WALL_SIZE);
+  walls.down.fixture = love.physics.newFixture(walls.down.body, walls.down.shape);
+end
 
-  local ceiling = {};
-  ceiling.body = love.physics.newBody(world, SCREEN_WIDTH / 2, 25);
-  ceiling.shape = love.physics.newRectangleShape(SCREEN_WIDTH, 50);
-  ceiling.fixture = love.physics.newFixture(ceiling.body, ceiling.shape);
-  table.insert(walls, ceiling);
+function love.focus(f)
+  if not f then
+    paused = false;
+  else
+    paused = true;
+  end
 end
 
 function love.keypressed(key, unicode)
@@ -120,19 +126,15 @@ function love.draw()
     love.graphics.clear();
     love.graphics.setColor(1, 1, 1);
 
-    drawWalls();
+    love.graphics.setColor(0, 1, 0);
+    love.graphics.polygon("fill", walls.left.body:getWorldPoints(walls.left.shape:getPoints()));
+    love.graphics.polygon("fill", walls.right.body:getWorldPoints(walls.right.shape:getPoints()));
+    love.graphics.polygon("fill", walls.up.body:getWorldPoints(walls.up.shape:getPoints()));
+    love.graphics.polygon("fill", walls.down.body:getWorldPoints(walls.down.shape:getPoints()));
     
-    love.graphics.print("Last Pressed: " .. last_pressed, 10, 10);
+    love.graphics.print("Last Pressed: " .. last_pressed, 60, 60);
   end);
 
   love.graphics.setColor(1, 1, 1);
   love.graphics.draw(CANVAS, CANVAS_OFFSET_X, CANVAS_OFFSET_Y, 0, CANVAS_SCALE, CANVAS_SCALE);
-end
-
-function drawWalls()
-  love.graphics.setColor(0, 1, 0);
-
-  for index, wall in pairs(walls) do
-		love.graphics.polygon("fill", wall.body:getWorldPoints(wall.shape:getPoints()))
-	end
 end
