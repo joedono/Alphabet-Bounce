@@ -120,7 +120,7 @@ function love.gamepadpressed(joystick, button)
     button == GAMEPAD_RIGHT_STICK or
     button == GAMEPAD_LEFT_SHOULDER or
     button == GAMEPAD_RIGHT_SHOULDER then
-      ball.body:applyLinearImpulse(0, -300);
+      ball.body:applyLinearImpulse(0, -BALL_SPEED);
   end
 end
 
@@ -149,11 +149,11 @@ function love.gamepadaxis(joystick, axis, value)
   end
 
   if axis == "triggerleft" and value > GAMEPAD_DEADZONE then -- L2
-    ball.body:applyLinearImpulse(0, -300);
+    ball.body:applyLinearImpulse(0, -BALL_SPEED);
   end
 
   if axis == "triggerright" and value > GAMEPAD_DEADZONE then -- R2
-    ball.body:applyLinearImpulse(0, -300);
+    ball.body:applyLinearImpulse(0, -BALL_SPEED);
   end
 end
 
