@@ -58,11 +58,18 @@ function love.load()
   ball = {};
   ball.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "dynamic");
   ball.shape = love.physics.newCircleShape(BALL_SIZE);
-  ball.fixture = love.physics.newFixture(ball.body, ball.shape, 1);
+  ball.fixture = love.physics.newFixture(ball.body, ball.shape);
   ball.fixture:setRestitution(0.5);
   ball.velocity = 0;
 
+  letter = {};
+  letter.x = SCREEN_WIDTH / 2;
+  letter.y = 280;
+  letter.r = 200;
+  letter.curLetter = "I";
+
   paused = false;
+  displayFont = love.graphics.newFont(500);
 end
 
 function setFullscreen(fullscreen)
@@ -183,6 +190,12 @@ function love.draw()
     love.graphics.polygon("fill", walls.right.body:getWorldPoints(walls.right.shape:getPoints()));
     love.graphics.polygon("fill", walls.up.body:getWorldPoints(walls.up.shape:getPoints()));
     love.graphics.polygon("fill", walls.down.body:getWorldPoints(walls.down.shape:getPoints()));
+
+    -- Draw Letter
+    love.graphics.setFont(displayFont);
+    love.graphics.setColor(0, 1, 1);
+    love.graphics.circle("line", letter.x, letter.y, letter.r);
+    love.graphics.printf(letter.curLetter, 0, 0, SCREEN_WIDTH, "center");
 
     -- Draw Ball
     love.graphics.setColor(0.47,0,0);
