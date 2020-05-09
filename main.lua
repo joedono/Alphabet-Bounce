@@ -1,6 +1,29 @@
-require "constants";
+FULLSCREEN = false;
+SCREEN_WIDTH = 1600;
+SCREEN_HEIGHT = 900;
 
-last_pressed = "";
+KEY_QUIT = "escape";
+
+GAMEPAD_LEFT = "dpleft";
+GAMEPAD_RIGHT = "dpright";
+GAMEPAD_UP = "dpup";
+GAMEPAD_DOWN = "dpdown";
+GAMEPAD_A = "a";
+GAMEPAD_B = "b";
+GAMEPAD_X = "x";
+GAMEPAD_Y = "y";
+GAMEPAD_LEFT_STICK = "leftstick";
+GAMEPAD_RIGHT_STICK = "rightstick";
+GAMEPAD_LEFT_SHOULDER = "leftshoulder";
+GAMEPAD_RIGHT_SHOULDER = "rightshoulder";
+GAMEPAD_START = "start";
+GAMEPAD_QUIT = "back";
+
+GAMEPAD_DEADZONE = 0.75;
+
+WALL_SIZE = 50;
+BALL_SIZE = 20;
+BALL_SPEED = 300;
 
 function love.load()
   setFullscreen(FULLSCREEN);
@@ -36,7 +59,8 @@ function love.load()
   ball.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "dynamic");
   ball.shape = love.physics.newCircleShape(BALL_SIZE);
   ball.fixture = love.physics.newFixture(ball.body, ball.shape, 1);
-	ball.fixture:setRestitution(0.9);
+  ball.fixture:setRestitution(0.5);
+  ball.velocity = 0;
 
   paused = false;
 end
@@ -79,43 +103,72 @@ function love.gamepadpressed(joystick, button)
   if button == GAMEPAD_QUIT then
     love.event.quit();
   end
+
+  if button == GAMEPAD_LEFT then
+    leftPressed = true;
+  end
+
+  if button == GAMEPAD_RIGHT then
+    rightPressed = true;
+  end
+
+  if button == GAMEPAD_A or
+    button == GAMEPAD_B or
+    button == GAMEPAD_X or 
+    button == GAMEPAD_Y or
+    button == GAMEPAD_LEFT_STICK or
+    button == GAMEPAD_RIGHT_STICK or
+    button == GAMEPAD_LEFT_SHOULDER or
+    button == GAMEPAD_RIGHT_SHOULDER then
+      ball.body:applyLinearImpulse(0, -300);
+  end
+end
+
+function love.gamepadreleased(joystick, button)
+  if button == GAMEPAD_LEFT then
+    leftPressed = false;
+  end
+
+  if button == GAMEPAD_RIGHT then
+    rightPressed = false;
+  end
 end
 
 function love.gamepadaxis(joystick, axis, value)
-  if axis == "leftx" then
-    -- X Movement
-  end
-
-  if axis == "lefty" then
-    -- Y Movement
-  end
-
-  if axis == "rightx" then
-    -- X Camera
-  end
-
-  if axis == "righty" then
-    -- Y Camera
-  end
-
-  if axis == "triggerleft" then -- L2
-    if value > GAMEPAD_DEADZONE then
-      -- Move
+  if axis == "leftx" or axis == "rightx" then
+    if math.abs(value) > GAMEPAD_DEADZONE then
+      if value < 0 then
+        leftPressed = true
+      else
+        rightPressed = true;
+      end
     else
-      -- Stop
+      leftPressed = false;
+      rightPressed = false;
     end
   end
 
-  if axis == "triggerright" then -- R2
-    if value > GAMEPAD_DEADZONE then
-      -- Move
-    else
-      -- Stop
-    end
+  if axis == "triggerleft" and value > GAMEPAD_DEADZONE then -- L2
+    ball.body:applyLinearImpulse(0, -300);
+  end
+
+  if axis == "triggerright" and value > GAMEPAD_DEADZONE then -- R2
+    ball.body:applyLinearImpulse(0, -300);
   end
 end
 
 function love.update(dt)
+  ball.velocity = 0;
+
+  if leftPressed then
+    ball.velocity = ball.velocity - BALL_SPEED;
+  end
+
+  if rightPressed then
+    ball.velocity = ball.velocity + BALL_SPEED;
+  end
+
+  ball.body:applyForce(ball.velocity, 0);
   world:update(dt);
 end
 
@@ -143,8 +196,6 @@ function love.draw()
     local x2 = math.cos(angle) * BALL_SIZE + x1;
     local y2 = math.sin(angle) * BALL_SIZE + y1;
     love.graphics.line(x1, y1, x2, y2);
-    
-    love.graphics.print("Last Pressed: " .. last_pressed, 60, 60);
   end);
 
   love.graphics.setColor(1, 1, 1);
