@@ -24,6 +24,44 @@ function love.gamepadpressed(joystick, button)
   last_pressed = button;
 end
 
+function love.gamepadaxis(joystick, axis, value)
+  if axis == "leftx" then
+    -- X Movement
+  end
+
+  if axis == "lefty" then
+    -- Y Movement
+  end
+
+  if axis == "rightx" then
+    -- X Camera
+  end
+
+  if axis == "righty" then
+    -- Y Camera
+  end
+
+  if axis == "triggerleft" then -- L2
+    if value > GAMEPAD_DEADZONE then
+      -- Move
+    else
+      -- Stop
+    end
+  end
+
+  if axis == "triggerright" then -- R2
+    if value > GAMEPAD_DEADZONE then
+      -- Move
+    else
+      -- Stop
+    end
+  end
+end
+
+function love.update(dt)
+
+end
+
 function love.draw()
   CANVAS:renderTo(function()
     love.graphics.clear();
