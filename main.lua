@@ -94,7 +94,13 @@ function love.load()
   system:setParticleLifetime(1, 2);
   system:setSpeed(300, 300);
   system:setSpread(math.pi * 2);
-  system:setColors(1, 1, 1, 1, 1, 1, 1, 0);
+  system:setColors(
+    0, 1, 1, 1,
+    0, 1, 1, 0.75,
+    1, 1, 0, 0.5,
+    1, 0, 1, 0.25,
+    0, 0, 0, 0
+  );
 end
 
 function setFullscreen(fullscreen)
@@ -286,24 +292,12 @@ function love.draw()
       love.graphics.printf(letter.curLetter, 0, 0, SCREEN_WIDTH, "center");
     end
 
-    love.graphics.setColor(math.random(), math.random(), math.random());
+    love.graphics.setColor(1, 1, 1);
     love.graphics.draw(system, 0, 0);
 
     -- Draw Ball
     love.graphics.setColor(1, 0, 0);
     love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius());
-
-    -- Draw Ball Line
-    local angle = ball.body:getAngle();
-    local x1, y1 = ball.body:getWorldCenter()
-    local x2 = math.cos(angle) * BALL_SIZE + x1;
-    local y2 = math.sin(angle) * BALL_SIZE + y1;
-    love.graphics.line(x1, y1, x2, y2);
-
-    -- Draw score
-    love.graphics.setColor(1, 1, 1);
-    love.graphics.setFont(scoreFont);
-    love.graphics.print(score, 50, 40);
   end);
 
   love.graphics.setColor(1, 1, 1);
