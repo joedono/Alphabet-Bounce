@@ -84,6 +84,17 @@ function love.load()
   jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
   pickupSound = love.audio.newSource("asset/sound/pickup.wav", "static");
   love.audio.setVolume(0.1);
+
+  star = love.graphics.newImage("asset/image/star.png");
+
+  system = love.graphics.newParticleSystem(star, 1000);
+  system:setPosition(letter.x, letter.y);
+  system:setEmissionArea("uniform", letter.r, letter.r);
+  system:setTexture(star);
+  system:setParticleLifetime(1, 2);
+  system:setSpeed(300, 300);
+  system:setSpread(math.pi * 2);
+  system:setColors(1, 1, 1, 1, 1, 1, 1, 0);
 end
 
 function setFullscreen(fullscreen)
@@ -235,6 +246,7 @@ function love.update(dt)
     if distance <= letter.r then
       letter.visible = false;
       score = score + 1;
+      system:emit(1000);
       pickupSound:play();
     end
   end
@@ -250,6 +262,7 @@ function love.update(dt)
   end
 
   ball.body:applyForce(ball.velocity, 0);
+  system:update(dt);
   world:update(dt);
 end
 
@@ -273,11 +286,12 @@ function love.draw()
       love.graphics.printf(letter.curLetter, 0, 0, SCREEN_WIDTH, "center");
     end
 
+    love.graphics.setColor(math.random(), math.random(), math.random());
+    love.graphics.draw(system, 0, 0);
+
     -- Draw Ball
-    love.graphics.setColor(0.47,0,0);
-    love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius());
     love.graphics.setColor(1, 0, 0);
-    love.graphics.circle("line", ball.body:getX(), ball.body:getY(), ball.shape:getRadius());
+    love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius());
 
     -- Draw Ball Line
     local angle = ball.body:getAngle();
