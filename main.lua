@@ -35,6 +35,7 @@ function love.load()
   setFullscreen(FULLSCREEN);
   love.mouse.setVisible(false);
   love.graphics.setDefaultFilter("nearest", "nearest");
+  math.randomseed(os.time());
 
   love.physics.setMeter(64);
   world = love.physics.newWorld(0, 9.8 * 128, true);
@@ -72,6 +73,7 @@ function love.load()
   letter.x = SCREEN_WIDTH / 2;
   letter.y = 280;
   letter.r = 200;
+  letter.offset = 0;
   letter.visible = false;
   letter.curLetter = "I";
 
@@ -241,11 +243,13 @@ function love.update(dt)
     letter.curLetter = string.sub(ALPHABET, index, index);
     letter.visible = true;
     letterTimer = LETTER_TIMER;
+    letter.offset = math.random(-SCREEN_WIDTH / 3, SCREEN_WIDTH / 3);
+    system:setPosition(letter.x + letter.offset, letter.y);
   end
 
   -- Check for letter pickup
   if letter.visible then
-    local dx = ball.body:getX() - letter.x;
+    local dx = ball.body:getX() - letter.x - letter.offset;
     local dy = ball.body:getY() - letter.y;
     local distance = math.sqrt (dx * dx + dy * dy);
 
@@ -288,7 +292,7 @@ function love.draw()
     if letter.visible then
       love.graphics.setFont(displayFont);
       love.graphics.setColor(0, 1, 1);
-      love.graphics.printf(letter.curLetter, 0, 0, SCREEN_WIDTH, "center");
+      love.graphics.printf(letter.curLetter, letter.offset, 0, SCREEN_WIDTH, "center");
     end
 
     love.graphics.setColor(1, 1, 1);
