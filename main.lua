@@ -66,13 +66,14 @@ function love.load()
   ball.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "dynamic");
   ball.shape = love.physics.newCircleShape(BALL_SIZE);
   ball.fixture = love.physics.newFixture(ball.body, ball.shape);
-  ball.fixture:setRestitution(0.5);
+  ball.fixture:setRestitution(0.6);
   ball.velocity = 0;
 
   letter = {};
   letter.x = SCREEN_WIDTH / 2;
   letter.y = 280;
   letter.r = 200;
+  letter.color = { 1, 0, 0 };
   letter.offset = 0;
   letter.visible = false;
   letter.curLetter = "I";
@@ -244,6 +245,7 @@ function love.update(dt)
     letter.visible = true;
     letterTimer = LETTER_TIMER;
     letter.offset = math.random(-SCREEN_WIDTH / 3, SCREEN_WIDTH / 3);
+    letter.color = { math.random(), math.random(), math.random() };
     system:setPosition(letter.x + letter.offset, letter.y);
   end
 
@@ -291,7 +293,7 @@ function love.draw()
     -- Draw Letter
     if letter.visible then
       love.graphics.setFont(displayFont);
-      love.graphics.setColor(0, 1, 1);
+      love.graphics.setColor(letter.color);
       love.graphics.printf(letter.curLetter, letter.offset, 0, SCREEN_WIDTH, "center");
     end
 
