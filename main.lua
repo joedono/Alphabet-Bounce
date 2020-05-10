@@ -288,7 +288,6 @@ function love.draw()
     if letter.visible then
       love.graphics.setFont(displayFont);
       love.graphics.setColor(0, 1, 1);
-      -- love.graphics.circle("line", letter.x, letter.y, letter.r);
       love.graphics.printf(letter.curLetter, 0, 0, SCREEN_WIDTH, "center");
     end
 
