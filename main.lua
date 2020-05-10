@@ -104,9 +104,9 @@ end
 
 function love.focus(f)
   if not f then
-    paused = false;
-  else
     paused = true;
+  else
+    paused = false;
   end
 end
 
@@ -197,6 +197,10 @@ function love.gamepadaxis(joystick, axis, value)
 end
 
 function love.update(dt)
+  if paused then
+    return;
+  end
+
   if letterTimer > 0 and not letter.visible then
     letterTimer = letterTimer - dt;
   end
@@ -209,7 +213,14 @@ function love.update(dt)
   end
 
   if letter.visible then
-    
+    local dx = ball.body:getX() - letter.x;
+    local dy = ball.body:getY() - letter.y;
+    local distance = math.sqrt (dx * dx + dy * dy);
+
+    if distance <= letter.r then
+      letter.visible = false;
+      score = score + 1;
+    end
   end
 
   ball.velocity = 0;
@@ -242,7 +253,7 @@ function love.draw()
     if letter.visible then
       love.graphics.setFont(displayFont);
       love.graphics.setColor(0, 1, 1);
-      love.graphics.circle("line", letter.x, letter.y, letter.r);
+      -- love.graphics.circle("line", letter.x, letter.y, letter.r);
       love.graphics.printf(letter.curLetter, 0, 0, SCREEN_WIDTH, "center");
     end
 
