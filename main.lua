@@ -86,7 +86,7 @@ function love.load()
 
   jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
   pickupSound = love.audio.newSource("asset/sound/pickup.wav", "static");
-  love.audio.setVolume(0.1);
+  love.audio.setVolume(0.3);
 
   star = love.graphics.newImage("asset/image/star.png");
 
@@ -165,7 +165,7 @@ function love.keyreleased(key, unicode)
 end
 
 function love.gamepadpressed(joystick, button)
-  if button == GAMEPAD_QUIT then
+  if button == GAMEPAD_QUIT and leftPressed then
     love.event.quit();
   end
 
