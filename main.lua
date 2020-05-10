@@ -80,6 +80,10 @@ function love.load()
   scoreFont = love.graphics.newFont(100);
   score = 0;
   letterTimer = LETTER_TIMER;
+
+  jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
+  pickupSound = love.audio.newSource("asset/sound/pickup.wav", "static");
+  love.audio.setVolume(0.1);
 end
 
 function setFullscreen(fullscreen)
@@ -125,6 +129,8 @@ function love.keypressed(key, unicode)
 
   if key == KEY_JUMP then
     ball.body:applyLinearImpulse(0, -BALL_SPEED);
+    jumpSound:stop();
+    jumpSound:play();
   end
 end
 
@@ -160,6 +166,8 @@ function love.gamepadpressed(joystick, button)
     button == GAMEPAD_LEFT_SHOULDER or
     button == GAMEPAD_RIGHT_SHOULDER then
       ball.body:applyLinearImpulse(0, -BALL_SPEED);
+      jumpSound:stop();
+      jumpSound:play();
   end
 end
 
@@ -189,10 +197,14 @@ function love.gamepadaxis(joystick, axis, value)
 
   if axis == "triggerleft" and value > GAMEPAD_DEADZONE then -- L2
     ball.body:applyLinearImpulse(0, -BALL_SPEED);
+    jumpSound:stop();
+    jumpSound:play();
   end
 
   if axis == "triggerright" and value > GAMEPAD_DEADZONE then -- R2
     ball.body:applyLinearImpulse(0, -BALL_SPEED);
+    jumpSound:stop();
+    jumpSound:play();
   end
 end
 
@@ -201,10 +213,12 @@ function love.update(dt)
     return;
   end
 
+  -- Run letterTimer
   if letterTimer > 0 and not letter.visible then
     letterTimer = letterTimer - dt;
   end
 
+  -- Show new letter
   if letterTimer <= 0 then
     local index = math.random(string.len(ALPHABET));
     letter.curLetter = string.sub(ALPHABET, index, index);
@@ -212,6 +226,7 @@ function love.update(dt)
     letterTimer = LETTER_TIMER;
   end
 
+  -- Check for letter pickup
   if letter.visible then
     local dx = ball.body:getX() - letter.x;
     local dy = ball.body:getY() - letter.y;
@@ -220,6 +235,7 @@ function love.update(dt)
     if distance <= letter.r then
       letter.visible = false;
       score = score + 1;
+      pickupSound:play();
     end
   end
 
