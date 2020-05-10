@@ -1,7 +1,10 @@
-FULLSCREEN = false;
+FULLSCREEN = true;
 SCREEN_WIDTH = 1600;
 SCREEN_HEIGHT = 900;
 
+KEY_LEFT = "left";
+KEY_RIGHT = "right";
+KEY_JUMP = "a";
 KEY_QUIT = "escape";
 
 GAMEPAD_LEFT = "dpleft";
@@ -110,6 +113,28 @@ end
 function love.keypressed(key, unicode)
   if key == KEY_QUIT then
     love.event.quit();
+  end
+
+  if key == KEY_LEFT then
+    leftPressed = true;
+  end
+
+  if key == KEY_RIGHT then
+    rightPressed = true;
+  end
+
+  if key == KEY_JUMP then
+    ball.body:applyLinearImpulse(0, -BALL_SPEED);
+  end
+end
+
+function love.keyreleased(key, unicode)
+  if key == KEY_LEFT then
+    leftPressed = false;
+  end
+
+  if key == KEY_RIGHT then
+    rightPressed = false;
   end
 end
 
