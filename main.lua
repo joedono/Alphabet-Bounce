@@ -68,6 +68,7 @@ function love.load()
   ball.fixture = love.physics.newFixture(ball.body, ball.shape);
   ball.fixture:setRestitution(0.6);
   ball.velocity = 0;
+  ball.gamepadVelocity = 0;
 
   letter = {};
   letter.x = SCREEN_WIDTH / 2;
@@ -80,7 +81,7 @@ function love.load()
 
   paused = false;
   displayFont = love.graphics.newFont(500);
-  scoreFont = love.graphics.newFont(100);
+  hudFont = love.graphics.newFont(12);
   score = 0;
   letterTimer = LETTER_TIMER;
 
@@ -89,6 +90,8 @@ function love.load()
   love.audio.setVolume(0.3);
 
   star = love.graphics.newImage("asset/image/star.png");
+
+  axisValue = 0;
 
   system = love.graphics.newParticleSystem(star, 1000);
   system:setPosition(letter.x, letter.y);
@@ -204,14 +207,9 @@ end
 function love.gamepadaxis(joystick, axis, value)
   if axis == "leftx" or axis == "rightx" then
     if math.abs(value) > GAMEPAD_DEADZONE then
-      if value < 0 then
-        leftPressed = true
-      else
-        rightPressed = true;
-      end
+      ball.gamepadVelocity = value * BALL_SPEED;
     else
-      leftPressed = false;
-      rightPressed = false;
+      ball.gamepadVelocity = 0;
     end
   end
 
@@ -271,6 +269,10 @@ function love.update(dt)
 
   if rightPressed then
     ball.velocity = ball.velocity + BALL_SPEED;
+  end
+
+  if not leftPressed and not rightPressed then
+    ball.velocity = ball.gamepadVelocity;
   end
 
   ball.body:applyForce(ball.velocity, 0);
