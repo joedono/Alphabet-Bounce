@@ -86,7 +86,44 @@ function love.load()
   letterTimer = LETTER_TIMER;
 
   jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
-  pickupSound = love.audio.newSource("asset/sound/pickup.wav", "static");
+  pickupSounds = {
+    ["A"] = love.audio.newSource("asset/sound/A.wav", "static"),
+    ["B"] = love.audio.newSource("asset/sound/B.wav", "static"),
+    ["C"] = love.audio.newSource("asset/sound/C.wav", "static"),
+    ["D"] = love.audio.newSource("asset/sound/D.wav", "static"),
+    ["E"] = love.audio.newSource("asset/sound/E.wav", "static"),
+    ["F"] = love.audio.newSource("asset/sound/F.wav", "static"),
+    ["G"] = love.audio.newSource("asset/sound/G.wav", "static"),
+    ["H"] = love.audio.newSource("asset/sound/H.wav", "static"),
+    ["I"] = love.audio.newSource("asset/sound/I.wav", "static"),
+    ["J"] = love.audio.newSource("asset/sound/J.wav", "static"),
+    ["K"] = love.audio.newSource("asset/sound/K.wav", "static"),
+    ["L"] = love.audio.newSource("asset/sound/L.wav", "static"),
+    ["M"] = love.audio.newSource("asset/sound/M.wav", "static"),
+    ["N"] = love.audio.newSource("asset/sound/N.wav", "static"),
+    ["O"] = love.audio.newSource("asset/sound/O.wav", "static"),
+    ["P"] = love.audio.newSource("asset/sound/P.wav", "static"),
+    ["Q"] = love.audio.newSource("asset/sound/Q.wav", "static"),
+    ["R"] = love.audio.newSource("asset/sound/R.wav", "static"),
+    ["S"] = love.audio.newSource("asset/sound/S.wav", "static"),
+    ["T"] = love.audio.newSource("asset/sound/T.wav", "static"),
+    ["U"] = love.audio.newSource("asset/sound/U.wav", "static"),
+    ["V"] = love.audio.newSource("asset/sound/V.wav", "static"),
+    ["W"] = love.audio.newSource("asset/sound/W.wav", "static"),
+    ["X"] = love.audio.newSource("asset/sound/X.wav", "static"),
+    ["Y"] = love.audio.newSource("asset/sound/Y.wav", "static"),
+    ["Z"] = love.audio.newSource("asset/sound/Z.wav", "static"),
+    ["1"] = love.audio.newSource("asset/sound/1.wav", "static"),
+    ["2"] = love.audio.newSource("asset/sound/2.wav", "static"),
+    ["3"] = love.audio.newSource("asset/sound/3.wav", "static"),
+    ["4"] = love.audio.newSource("asset/sound/4.wav", "static"),
+    ["5"] = love.audio.newSource("asset/sound/5.wav", "static"),
+    ["6"] = love.audio.newSource("asset/sound/6.wav", "static"),
+    ["7"] = love.audio.newSource("asset/sound/7.wav", "static"),
+    ["8"] = love.audio.newSource("asset/sound/8.wav", "static"),
+    ["9"] = love.audio.newSource("asset/sound/9.wav", "static")
+  };
+
   love.audio.setVolume(0.3);
 
   star = love.graphics.newImage("asset/image/star.png");
@@ -257,7 +294,7 @@ function love.update(dt)
       letter.visible = false;
       score = score + 1;
       system:emit(1000);
-      pickupSound:play();
+      pickupSounds[letter.curLetter]:play();
     end
   end
 
