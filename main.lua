@@ -303,6 +303,15 @@ function love.draw()
     -- Draw Ball
     love.graphics.setColor(1, 0, 0);
     love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius());
+
+    love.graphics.setColor(1, 1, 1);
+    if leftPressed then
+      love.graphics.circle("fill", 10, 10, 5);
+    end
+
+    if rightPressed then
+      love.graphics.circle("fill", 20, 10, 5);
+    end
   end);
 
   love.graphics.setColor(1, 1, 1);
