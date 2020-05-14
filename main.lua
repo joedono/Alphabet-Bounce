@@ -132,9 +132,8 @@ function love.load()
   system = love.graphics.newParticleSystem(star, 1000);
   system:setPosition(letter.x, letter.y);
   system:setEmissionArea("uniform", letter.r, letter.r);
-  system:setTexture(star);
   system:setParticleLifetime(1, 2);
-  system:setSpeed(300, 300);
+  system:setSpeed(10, 300);
   system:setSpread(math.pi * 2);
   system:setColors(
     0, 1, 1, 1,
@@ -142,6 +141,16 @@ function love.load()
     1, 1, 0, 0.5,
     1, 0, 1, 0.25,
     0, 0, 0, 0
+  );
+
+  jumpSystem = love.graphics.newParticleSystem(star, 500);
+  jumpSystem:setParticleLifetime(0.3, 0.5);
+  jumpSystem:setSpeed(100, 300);
+  jumpSystem:setSpread(math.pi * 2);
+  jumpSystem:setSizes(0.6);
+  jumpSystem:setColors(
+    1, 1, 0, 1,
+    1, 0, 0, 0
   );
 end
 
@@ -187,9 +196,7 @@ function love.keypressed(key, unicode)
   end
 
   if key == KEY_JUMP then
-    ball.body:applyLinearImpulse(0, -BALL_SPEED);
-    jumpSound:stop();
-    jumpSound:play();
+    jump();
   end
 end
 
@@ -224,9 +231,7 @@ function love.gamepadpressed(joystick, button)
     button == GAMEPAD_RIGHT_STICK or
     button == GAMEPAD_LEFT_SHOULDER or
     button == GAMEPAD_RIGHT_SHOULDER then
-      ball.body:applyLinearImpulse(0, -BALL_SPEED);
-      jumpSound:stop();
-      jumpSound:play();
+      jump();
   end
 end
 
@@ -250,16 +255,21 @@ function love.gamepadaxis(joystick, axis, value)
   end
 
   if axis == "triggerleft" and value > GAMEPAD_DEADZONE then -- L2
-    ball.body:applyLinearImpulse(0, -BALL_SPEED);
-    jumpSound:stop();
-    jumpSound:play();
+    jump();
   end
 
   if axis == "triggerright" and value > GAMEPAD_DEADZONE then -- R2
-    ball.body:applyLinearImpulse(0, -BALL_SPEED);
-    jumpSound:stop();
-    jumpSound:play();
+    jump();
   end
+end
+
+function jump()
+  ball.body:applyLinearImpulse(0, -BALL_SPEED);
+  jumpSound:stop();
+  jumpSound:play();
+
+  jumpSystem:setPosition(ball.body:getX(), ball.body:getY() + ball.shape:getRadius());
+  jumpSystem:emit(100);
 end
 
 function love.update(dt)
@@ -313,6 +323,7 @@ function love.update(dt)
 
   ball.body:applyForce(ball.velocity, 0);
   system:update(dt);
+  jumpSystem:update(dt);
   world:update(dt);
 end
 
@@ -337,6 +348,7 @@ function love.draw()
 
     love.graphics.setColor(1, 1, 1);
     love.graphics.draw(system, 0, 0);
+    love.graphics.draw(jumpSystem, 0, 0);
 
     -- Draw Ball
     love.graphics.setColor(1, 0, 0);
