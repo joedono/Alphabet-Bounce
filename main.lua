@@ -86,6 +86,7 @@ function love.load()
   letterTimer = LETTER_TIMER;
 
   jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
+  jumpSound:setVolume(0.3);
   pickupSounds = {
     ["A"] = love.audio.newSource("asset/sound/A.wav", "static"),
     ["B"] = love.audio.newSource("asset/sound/B.wav", "static"),
@@ -123,8 +124,6 @@ function love.load()
     ["8"] = love.audio.newSource("asset/sound/8.wav", "static"),
     ["9"] = love.audio.newSource("asset/sound/9.wav", "static")
   };
-
-  love.audio.setVolume(0.3);
 
   star = love.graphics.newImage("asset/image/star.png");
 
