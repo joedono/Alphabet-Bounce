@@ -1,5 +1,5 @@
 Player = Class {
-  init = function(self, world, jumpSound)
+  init = function(self, world, jumpSound, jumpSystem)
     self.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "dynamic");
     self.shape = love.physics.newCircleShape(BALL_SIZE);
     self.fixture = love.physics.newFixture(self.body, self.shape);
@@ -11,6 +11,7 @@ Player = Class {
     self.rightPressed = false;
 
     self.jumpSound = jumpSound;
+    self.jumpSystem = jumpSystem;
   end
 }
 
@@ -18,6 +19,9 @@ function Player:jump()
   self.body:applyLinearImpulse(0, -BALL_SPEED);
   self.jumpSound:stop();
   self.jumpSound:play();
+
+  self.jumpSystem:setPosition(self.body:getX(), self.body:getY() + self.shape:getRadius());
+  self.jumpSystem:emit(100);
 end
 
 function Player:update(dt)
@@ -36,6 +40,7 @@ function Player:update(dt)
   end
 
   self.body:applyForce(self.velocity, 0);
+  self.jumpSystem:update(dt);
 end
 
 function Player:draw()
@@ -43,11 +48,16 @@ function Player:draw()
   love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius());
 
   love.graphics.setColor(1, 1, 1);
-  if leftPressed then
+  love.graphics.draw(jumpSystem, 0, 0);
+end
+
+function Player:drawDebug()
+  love.graphics.setColor(1, 1, 1);
+  if self.leftPressed then
     love.graphics.circle("fill", 10, 10, 5);
   end
 
-  if rightPressed then
+  if self.rightPressed then
     love.graphics.circle("fill", 20, 10, 5);
   end
-end  
+end

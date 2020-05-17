@@ -1,6 +1,8 @@
 Camera = require "lib/hump/camera";
 Class = require "lib/hump/class";
 
+require "lib/general";
+
 require "constants";
 require "player";
 
@@ -16,28 +18,24 @@ function love.load()
   walls = {};
 	
   walls.left = {};
-  walls.left.body = love.physics.newBody(world, WALL_SIZE / 2, SCREEN_HEIGHT / 2);
-  walls.left.shape = love.physics.newRectangleShape(WALL_SIZE, SCREEN_HEIGHT);
+  walls.left.body = love.physics.newBody(world, WALL_SIZE / 2, ROOM_HEIGHT / 2);
+  walls.left.shape = love.physics.newRectangleShape(WALL_SIZE, ROOM_HEIGHT);
   walls.left.fixture = love.physics.newFixture(walls.left.body, walls.left.shape);
 
   walls.right = {};
-  walls.right.body = love.physics.newBody(world, SCREEN_WIDTH - WALL_SIZE / 2, SCREEN_HEIGHT / 2);
-  walls.right.shape = love.physics.newRectangleShape(WALL_SIZE, SCREEN_HEIGHT);
+  walls.right.body = love.physics.newBody(world, ROOM_WIDTH - WALL_SIZE / 2, ROOM_HEIGHT / 2);
+  walls.right.shape = love.physics.newRectangleShape(WALL_SIZE, ROOM_HEIGHT);
   walls.right.fixture = love.physics.newFixture(walls.right.body, walls.right.shape);
 
   walls.up = {};
-  walls.up.body = love.physics.newBody(world, SCREEN_WIDTH / 2, WALL_SIZE / 2);
-  walls.up.shape = love.physics.newRectangleShape(SCREEN_WIDTH, WALL_SIZE);
+  walls.up.body = love.physics.newBody(world, ROOM_WIDTH / 2, WALL_SIZE / 2);
+  walls.up.shape = love.physics.newRectangleShape(ROOM_WIDTH, WALL_SIZE);
   walls.up.fixture = love.physics.newFixture(walls.up.body, walls.up.shape);
 
   walls.down = {};
-  walls.down.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT - WALL_SIZE / 2);
-  walls.down.shape = love.physics.newRectangleShape(SCREEN_WIDTH, WALL_SIZE);
+  walls.down.body = love.physics.newBody(world, ROOM_WIDTH / 2, ROOM_HEIGHT - WALL_SIZE / 2);
+  walls.down.shape = love.physics.newRectangleShape(ROOM_WIDTH, WALL_SIZE);
   walls.down.fixture = love.physics.newFixture(walls.down.body, walls.down.shape);
-
-  jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
-  jumpSound:setVolume(0.3);
-  player = Player(world, jumpSound);
 
   letter = {};
   letter.x = SCREEN_WIDTH / 2;
@@ -110,6 +108,9 @@ function love.load()
     0, 0, 0, 0
   );
 
+  jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
+  jumpSound:setVolume(0.3);
+
   jumpSystem = love.graphics.newParticleSystem(star, 500);
   jumpSystem:setParticleLifetime(0.3, 0.5);
   jumpSystem:setSpeed(100, 300);
@@ -119,6 +120,9 @@ function love.load()
     1, 1, 0, 1,
     1, 0, 0, 0
   );
+
+  player = Player(world, jumpSound, jumpSystem);
+  camera = Camera(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 end
 
 function setFullscreen(fullscreen)
@@ -230,15 +234,6 @@ function love.gamepadaxis(joystick, axis, value)
   end
 end
 
-function jump()
-  ball.body:applyLinearImpulse(0, -BALL_SPEED);
-  jumpSound:stop();
-  jumpSound:play();
-
-  jumpSystem:setPosition(ball.body:getX(), ball.body:getY() + ball.shape:getRadius());
-  jumpSystem:emit(100);
-end
-
 function love.update(dt)
   if paused then
     return;
@@ -255,7 +250,7 @@ function love.update(dt)
     letter.curLetter = string.sub(ALPHABET, index, index);
     letter.visible = true;
     letterTimer = LETTER_TIMER;
-    letter.offset = math.random(-SCREEN_WIDTH / 3, SCREEN_WIDTH / 3);
+    letter.offset = math.random(-ROOM_WIDTH / 3, ROOM_WIDTH / 3);
     letter.color = { math.random(), math.random(), math.random() };
     system:setPosition(letter.x + letter.offset, letter.y);
   end
@@ -275,16 +270,34 @@ function love.update(dt)
   end
 
   player:update(dt);
+  updateCamera();
 
   system:update(dt);
-  jumpSystem:update(dt);
   world:update(dt);
+end
+
+function updateCamera()
+  camera:lockWindow(
+    player.body:getX(), player.body:getY(),
+    SCREEN_WIDTH / 3, SCREEN_WIDTH * 2/3,
+    SCREEN_HEIGHT / 3, SCREEN_HEIGHT * 2/3
+  );
+  local cameraX, cameraY = camera:position();
+  cameraX = cameraX - SCREEN_WIDTH / 2;
+  cameraY = cameraY - SCREEN_HEIGHT / 2;
+
+  cameraX = math.clamp(cameraX, 0, ROOM_WIDTH - SCREEN_WIDTH);
+  cameraY = math.clamp(cameraY, 0, ROOM_HEIGHT - SCREEN_HEIGHT);
+
+  camera:lookAt(cameraX + SCREEN_WIDTH / 2, cameraY + SCREEN_HEIGHT / 2);
 end
 
 function love.draw()
   CANVAS:renderTo(function()
     love.graphics.clear();
     love.graphics.setColor(1, 1, 1);
+    
+    camera:attach(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
     -- Draw Walls
     love.graphics.setColor(0, 1, 0);
@@ -302,10 +315,13 @@ function love.draw()
 
     love.graphics.setColor(1, 1, 1);
     love.graphics.draw(system, 0, 0);
-    love.graphics.draw(jumpSystem, 0, 0);
 
     -- Draw Ball
     player:draw();
+
+    camera:detach();
+
+    player:drawDebug();
   end);
 
   love.graphics.setColor(1, 1, 1);
