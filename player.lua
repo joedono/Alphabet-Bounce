@@ -5,6 +5,7 @@ Player = Class {
     self.fixture = love.physics.newFixture(self.body, self.shape);
     self.fixture:setRestitution(0.6);
     self.velocity = 0;
+    self.gamepadVelocity = 0;
 
     self.leftPressed = false;
     self.rightPressed = false;
@@ -30,10 +31,23 @@ function Player:update(dt)
     self.velocity = self.velocity + BALL_SPEED;
   end
 
+  if not self.leftPressed and not self.rightPressed then
+    self.velocity = self.gamepadVelocity;
+  end
+
   self.body:applyForce(self.velocity, 0);
 end
 
 function Player:draw()
   love.graphics.setColor(1, 0, 0);
   love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius());
+
+  love.graphics.setColor(1, 1, 1);
+  if leftPressed then
+    love.graphics.circle("fill", 10, 10, 5);
+  end
+
+  if rightPressed then
+    love.graphics.circle("fill", 20, 10, 5);
+  end
 end  

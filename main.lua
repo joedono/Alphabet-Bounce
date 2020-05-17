@@ -36,6 +36,7 @@ function love.load()
   walls.down.fixture = love.physics.newFixture(walls.down.body, walls.down.shape);
 
   jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
+  jumpSound:setVolume(0.3);
   player = Player(world, jumpSound);
 
   letter = {};
@@ -49,21 +50,57 @@ function love.load()
 
   paused = false;
   displayFont = love.graphics.newFont(500);
-  scoreFont = love.graphics.newFont(100);
+  hudFont = love.graphics.newFont(12);
   score = 0;
   letterTimer = LETTER_TIMER;
 
-  pickupSound = love.audio.newSource("asset/sound/pickup.wav", "static");
-  love.audio.setVolume(0.3);
+  pickupSounds = {
+    ["A"] = love.audio.newSource("asset/sound/A.wav", "static"),
+    ["B"] = love.audio.newSource("asset/sound/B.wav", "static"),
+    ["C"] = love.audio.newSource("asset/sound/C.wav", "static"),
+    ["D"] = love.audio.newSource("asset/sound/D.wav", "static"),
+    ["E"] = love.audio.newSource("asset/sound/E.wav", "static"),
+    ["F"] = love.audio.newSource("asset/sound/F.wav", "static"),
+    ["G"] = love.audio.newSource("asset/sound/G.wav", "static"),
+    ["H"] = love.audio.newSource("asset/sound/H.wav", "static"),
+    ["I"] = love.audio.newSource("asset/sound/I.wav", "static"),
+    ["J"] = love.audio.newSource("asset/sound/J.wav", "static"),
+    ["K"] = love.audio.newSource("asset/sound/K.wav", "static"),
+    ["L"] = love.audio.newSource("asset/sound/L.wav", "static"),
+    ["M"] = love.audio.newSource("asset/sound/M.wav", "static"),
+    ["N"] = love.audio.newSource("asset/sound/N.wav", "static"),
+    ["O"] = love.audio.newSource("asset/sound/O.wav", "static"),
+    ["P"] = love.audio.newSource("asset/sound/P.wav", "static"),
+    ["Q"] = love.audio.newSource("asset/sound/Q.wav", "static"),
+    ["R"] = love.audio.newSource("asset/sound/R.wav", "static"),
+    ["S"] = love.audio.newSource("asset/sound/S.wav", "static"),
+    ["T"] = love.audio.newSource("asset/sound/T.wav", "static"),
+    ["U"] = love.audio.newSource("asset/sound/U.wav", "static"),
+    ["V"] = love.audio.newSource("asset/sound/V.wav", "static"),
+    ["W"] = love.audio.newSource("asset/sound/W.wav", "static"),
+    ["X"] = love.audio.newSource("asset/sound/X.wav", "static"),
+    ["Y"] = love.audio.newSource("asset/sound/Y.wav", "static"),
+    ["Z"] = love.audio.newSource("asset/sound/Z.wav", "static"),
+    ["1"] = love.audio.newSource("asset/sound/1.wav", "static"),
+    ["2"] = love.audio.newSource("asset/sound/2.wav", "static"),
+    ["3"] = love.audio.newSource("asset/sound/3.wav", "static"),
+    ["4"] = love.audio.newSource("asset/sound/4.wav", "static"),
+    ["5"] = love.audio.newSource("asset/sound/5.wav", "static"),
+    ["6"] = love.audio.newSource("asset/sound/6.wav", "static"),
+    ["7"] = love.audio.newSource("asset/sound/7.wav", "static"),
+    ["8"] = love.audio.newSource("asset/sound/8.wav", "static"),
+    ["9"] = love.audio.newSource("asset/sound/9.wav", "static")
+  };
 
   star = love.graphics.newImage("asset/image/star.png");
+
+  axisValue = 0;
 
   system = love.graphics.newParticleSystem(star, 1000);
   system:setPosition(letter.x, letter.y);
   system:setEmissionArea("uniform", letter.r, letter.r);
-  system:setTexture(star);
   system:setParticleLifetime(1, 2);
-  system:setSpeed(300, 300);
+  system:setSpeed(10, 300);
   system:setSpread(math.pi * 2);
   system:setColors(
     0, 1, 1, 1,
@@ -71,6 +108,16 @@ function love.load()
     1, 1, 0, 0.5,
     1, 0, 1, 0.25,
     0, 0, 0, 0
+  );
+
+  jumpSystem = love.graphics.newParticleSystem(star, 500);
+  jumpSystem:setParticleLifetime(0.3, 0.5);
+  jumpSystem:setSpeed(100, 300);
+  jumpSystem:setSpread(math.pi * 2);
+  jumpSystem:setSizes(0.6);
+  jumpSystem:setColors(
+    1, 1, 0, 1,
+    1, 0, 0, 0
   );
 end
 
@@ -168,14 +215,9 @@ end
 function love.gamepadaxis(joystick, axis, value)
   if axis == "leftx" or axis == "rightx" then
     if math.abs(value) > GAMEPAD_DEADZONE then
-      if value < 0 then
-        player.leftPressed = true
-      else
-        player.rightPressed = true;
-      end
+      player.gamepadVelocity = value * BALL_SPEED;
     else
-      player.leftPressed = false;
-      player.rightPressed = false;
+      player.gamepadVelocity = 0;
     end
   end
 
@@ -186,6 +228,15 @@ function love.gamepadaxis(joystick, axis, value)
   if axis == "triggerright" and value > GAMEPAD_DEADZONE then -- R2
     player:jump();
   end
+end
+
+function jump()
+  ball.body:applyLinearImpulse(0, -BALL_SPEED);
+  jumpSound:stop();
+  jumpSound:play();
+
+  jumpSystem:setPosition(ball.body:getX(), ball.body:getY() + ball.shape:getRadius());
+  jumpSystem:emit(100);
 end
 
 function love.update(dt)
@@ -219,13 +270,14 @@ function love.update(dt)
       letter.visible = false;
       score = score + 1;
       system:emit(1000);
-      pickupSound:play();
+      pickupSounds[letter.curLetter]:play();
     end
   end
 
   player:update(dt);
 
   system:update(dt);
+  jumpSystem:update(dt);
   world:update(dt);
 end
 
@@ -250,6 +302,7 @@ function love.draw()
 
     love.graphics.setColor(1, 1, 1);
     love.graphics.draw(system, 0, 0);
+    love.graphics.draw(jumpSystem, 0, 0);
 
     -- Draw Ball
     player:draw();
