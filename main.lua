@@ -1,35 +1,8 @@
-FULLSCREEN = true;
-SCREEN_WIDTH = 1600;
-SCREEN_HEIGHT = 900;
+Camera = require "lib/hump/camera";
+Class = require "lib/hump/class";
 
-KEY_LEFT = "left";
-KEY_RIGHT = "right";
-KEY_JUMP = "a";
-KEY_QUIT = "escape";
-
-GAMEPAD_LEFT = "dpleft";
-GAMEPAD_RIGHT = "dpright";
-GAMEPAD_UP = "dpup";
-GAMEPAD_DOWN = "dpdown";
-GAMEPAD_A = "a";
-GAMEPAD_B = "b";
-GAMEPAD_X = "x";
-GAMEPAD_Y = "y";
-GAMEPAD_LEFT_STICK = "leftstick";
-GAMEPAD_RIGHT_STICK = "rightstick";
-GAMEPAD_LEFT_SHOULDER = "leftshoulder";
-GAMEPAD_RIGHT_SHOULDER = "rightshoulder";
-GAMEPAD_START = "start";
-GAMEPAD_QUIT = "back";
-
-GAMEPAD_DEADZONE = 0.75;
-
-WALL_SIZE = 50;
-BALL_SIZE = 20;
-BALL_SPEED = 300;
-
-ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-LETTER_TIMER = 3;
+require "constants";
+require "player";
 
 function love.load()
   setFullscreen(FULLSCREEN);
@@ -62,12 +35,8 @@ function love.load()
   walls.down.shape = love.physics.newRectangleShape(SCREEN_WIDTH, WALL_SIZE);
   walls.down.fixture = love.physics.newFixture(walls.down.body, walls.down.shape);
 
-  ball = {};
-  ball.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "dynamic");
-  ball.shape = love.physics.newCircleShape(BALL_SIZE);
-  ball.fixture = love.physics.newFixture(ball.body, ball.shape);
-  ball.fixture:setRestitution(0.6);
-  ball.velocity = 0;
+  jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
+  player = Player(world, jumpSound);
 
   letter = {};
   letter.x = SCREEN_WIDTH / 2;
@@ -84,7 +53,6 @@ function love.load()
   score = 0;
   letterTimer = LETTER_TIMER;
 
-  jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
   pickupSound = love.audio.newSource("asset/sound/pickup.wav", "static");
   love.audio.setVolume(0.3);
 
@@ -140,27 +108,25 @@ function love.keypressed(key, unicode)
   end
 
   if key == KEY_LEFT then
-    leftPressed = true;
+    player.leftPressed = true;
   end
 
   if key == KEY_RIGHT then
-    rightPressed = true;
+    player.rightPressed = true;
   end
 
   if key == KEY_JUMP then
-    ball.body:applyLinearImpulse(0, -BALL_SPEED);
-    jumpSound:stop();
-    jumpSound:play();
+    player:jump();
   end
 end
 
 function love.keyreleased(key, unicode)
   if key == KEY_LEFT then
-    leftPressed = false;
+    player.leftPressed = false;
   end
 
   if key == KEY_RIGHT then
-    rightPressed = false;
+    player.rightPressed = false;
   end
 end
 
@@ -170,11 +136,11 @@ function love.gamepadpressed(joystick, button)
   end
 
   if button == GAMEPAD_LEFT then
-    leftPressed = true;
+    player.leftPressed = true;
   end
 
   if button == GAMEPAD_RIGHT then
-    rightPressed = true;
+    player.rightPressed = true;
   end
 
   if button == GAMEPAD_A or
@@ -185,19 +151,17 @@ function love.gamepadpressed(joystick, button)
     button == GAMEPAD_RIGHT_STICK or
     button == GAMEPAD_LEFT_SHOULDER or
     button == GAMEPAD_RIGHT_SHOULDER then
-      ball.body:applyLinearImpulse(0, -BALL_SPEED);
-      jumpSound:stop();
-      jumpSound:play();
+      player:jump();
   end
 end
 
 function love.gamepadreleased(joystick, button)
   if button == GAMEPAD_LEFT then
-    leftPressed = false;
+    player.leftPressed = false;
   end
 
   if button == GAMEPAD_RIGHT then
-    rightPressed = false;
+    player.rightPressed = false;
   end
 end
 
@@ -205,26 +169,22 @@ function love.gamepadaxis(joystick, axis, value)
   if axis == "leftx" or axis == "rightx" then
     if math.abs(value) > GAMEPAD_DEADZONE then
       if value < 0 then
-        leftPressed = true
+        player.leftPressed = true
       else
-        rightPressed = true;
+        player.rightPressed = true;
       end
     else
-      leftPressed = false;
-      rightPressed = false;
+      player.leftPressed = false;
+      player.rightPressed = false;
     end
   end
 
   if axis == "triggerleft" and value > GAMEPAD_DEADZONE then -- L2
-    ball.body:applyLinearImpulse(0, -BALL_SPEED);
-    jumpSound:stop();
-    jumpSound:play();
+    player:jump();
   end
 
   if axis == "triggerright" and value > GAMEPAD_DEADZONE then -- R2
-    ball.body:applyLinearImpulse(0, -BALL_SPEED);
-    jumpSound:stop();
-    jumpSound:play();
+    player:jump();
   end
 end
 
@@ -251,8 +211,8 @@ function love.update(dt)
 
   -- Check for letter pickup
   if letter.visible then
-    local dx = ball.body:getX() - letter.x - letter.offset;
-    local dy = ball.body:getY() - letter.y;
+    local dx = player.body:getX() - letter.x - letter.offset;
+    local dy = player.body:getY() - letter.y;
     local distance = math.sqrt (dx * dx + dy * dy);
 
     if distance <= letter.r then
@@ -263,17 +223,8 @@ function love.update(dt)
     end
   end
 
-  ball.velocity = 0;
+  player:update(dt);
 
-  if leftPressed then
-    ball.velocity = ball.velocity - BALL_SPEED;
-  end
-
-  if rightPressed then
-    ball.velocity = ball.velocity + BALL_SPEED;
-  end
-
-  ball.body:applyForce(ball.velocity, 0);
   system:update(dt);
   world:update(dt);
 end
@@ -301,8 +252,7 @@ function love.draw()
     love.graphics.draw(system, 0, 0);
 
     -- Draw Ball
-    love.graphics.setColor(1, 0, 0);
-    love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius());
+    player:draw();
   end);
 
   love.graphics.setColor(1, 1, 1);
