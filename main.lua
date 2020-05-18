@@ -1,4 +1,3 @@
-Camera = require "lib/hump/camera";
 Class = require "lib/hump/class";
 
 require "lib/general";
@@ -13,7 +12,7 @@ function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest");
   math.randomseed(os.time());
 
-  love.physics.setMeter(64);
+  love.physics.setMeter(32);
   world = love.physics.newWorld(0, 9.8 * 128, true);
 
   local source = love.filesystem.load("config/room.lua")();
@@ -67,7 +66,6 @@ function love.load()
 
   player = Player(world, star);
   letter = Letter(star);
-  camera = Camera(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 end
 
 function setFullscreen(fullscreen)
@@ -204,7 +202,6 @@ function love.update(dt)
 
   letter:update(dt);
   player:update(dt);
-  updateCamera();
 
   if letter:tryPickup(player.body:getX(), player.body:getY()) then
     score = score + 1;
@@ -214,28 +211,10 @@ function love.update(dt)
   world:update(dt);
 end
 
-function updateCamera()
-  camera:lockWindow(
-    player.body:getX(), player.body:getY(),
-    SCREEN_WIDTH / 3 * CANVAS_SCALE, SCREEN_WIDTH * 2/3 * CANVAS_SCALE,
-    SCREEN_HEIGHT / 3 * CANVAS_SCALE, SCREEN_HEIGHT * 2/3 * CANVAS_SCALE
-  );
-  local cameraX, cameraY = camera:position();
-  cameraX = cameraX - SCREEN_WIDTH / 2;
-  cameraY = cameraY - SCREEN_HEIGHT / 2;
-
-  cameraX = math.clamp(cameraX, 0, roomWidth - SCREEN_WIDTH);
-  cameraY = math.clamp(cameraY, 0, roomHeight - SCREEN_HEIGHT);
-
-  camera:lookAt(cameraX + SCREEN_WIDTH / 2, cameraY + SCREEN_HEIGHT / 2);
-end
-
 function love.draw()
   CANVAS:renderTo(function()
     love.graphics.clear();
     love.graphics.setColor(1, 1, 1);
-    
-    camera:attach(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
     -- Draw Walls
     love.graphics.setColor(0, 1, 0);
@@ -245,8 +224,6 @@ function love.draw()
 
     letter:draw();
     player:draw();
-
-    camera:detach();
 
     player:drawDebug();
   end);

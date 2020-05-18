@@ -3,7 +3,7 @@ Player = Class {
     self.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "dynamic");
     self.shape = love.physics.newCircleShape(BALL_SIZE);
     self.fixture = love.physics.newFixture(self.body, self.shape);
-    self.fixture:setRestitution(0.6);
+    self.fixture:setRestitution(0.3);
     self.velocity = 0;
     self.gamepadVelocity = 0;
 
@@ -26,7 +26,7 @@ Player = Class {
 }
 
 function Player:jump()
-  self.body:applyLinearImpulse(0, -BALL_SPEED);
+  self.body:applyLinearImpulse(0, -BALL_SPEED * 3 / 2);
   self.jumpSound:stop();
   self.jumpSound:play();
 
