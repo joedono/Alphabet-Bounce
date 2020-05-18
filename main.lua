@@ -217,8 +217,8 @@ end
 function updateCamera()
   camera:lockWindow(
     player.body:getX(), player.body:getY(),
-    SCREEN_WIDTH / 3, SCREEN_WIDTH * 2/3,
-    SCREEN_HEIGHT / 3, SCREEN_HEIGHT * 2/3
+    SCREEN_WIDTH / 3 * CANVAS_SCALE, SCREEN_WIDTH * 2/3 * CANVAS_SCALE,
+    SCREEN_HEIGHT / 3 * CANVAS_SCALE, SCREEN_HEIGHT * 2/3 * CANVAS_SCALE
   );
   local cameraX, cameraY = camera:position();
   cameraX = cameraX - SCREEN_WIDTH / 2;
