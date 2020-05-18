@@ -17,7 +17,7 @@ Player = Class {
     self.jumpSystem:setParticleLifetime(0.3, 0.5);
     self.jumpSystem:setSpeed(100, 300);
     self.jumpSystem:setSpread(math.pi * 2);
-    self.jumpSystem:setSizes(0.6);
+    self.jumpSystem:setSizes(0.3);
     self.jumpSystem:setColors(
       1, 1, 0, 1,
       1, 0, 0, 0
@@ -26,7 +26,7 @@ Player = Class {
 }
 
 function Player:jump()
-  self.body:applyLinearImpulse(0, -BALL_SPEED * 3 / 2);
+  self.body:applyLinearImpulse(0, -BALL_SPEED * 5 / 4);
   self.jumpSound:stop();
   self.jumpSound:play();
 
@@ -64,10 +64,10 @@ end
 function Player:drawDebug()
   love.graphics.setColor(1, 1, 1);
   if self.leftPressed then
-    love.graphics.circle("fill", 10, 10, 5);
+    love.graphics.circle("fill", 5, 5, 5);
   end
 
   if self.rightPressed then
-    love.graphics.circle("fill", 20, 10, 5);
+    love.graphics.circle("fill", 20, 5, 5);
   end
 end

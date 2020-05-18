@@ -19,6 +19,7 @@ function love.load()
   roomWidth = source.width * source.tilewidth;
   roomHeight = source.height * source.tileheight;
   loadWalls(source);
+  loadSpawns(source);
 
   paused = false;
   hudFont = love.graphics.newFont(12);
@@ -103,6 +104,25 @@ function loadWalls(source)
     wall.shape = love.physics.newRectangleShape(wallSource.width, wallSource.height);
     wall.fixture = love.physics.newFixture(wall.body, wall.shape);
     table.insert(walls, wall);
+  end
+end
+
+function loadSpawns(source)
+  spawns = {};
+  local spawnsSource;
+  for index, layer in pairs(source.layers) do
+    if layer.name == "Spawns" then
+      spawnsSource = layer.objects;
+    end
+  end
+
+  for index, spawnSource in pairs(spawnsSource) do
+    local spawn = {
+      x = spawnSource.x,
+      y = spawnSource.y
+    };
+    
+    table.insert(spawns, spawn);
   end
 end
 
