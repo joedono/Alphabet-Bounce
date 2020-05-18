@@ -15,27 +15,7 @@ function love.load()
   love.physics.setMeter(64);
   world = love.physics.newWorld(0, 9.8 * 128, true);
 
-  walls = {};
-	
-  walls.left = {};
-  walls.left.body = love.physics.newBody(world, WALL_SIZE / 2, ROOM_HEIGHT / 2);
-  walls.left.shape = love.physics.newRectangleShape(WALL_SIZE, ROOM_HEIGHT);
-  walls.left.fixture = love.physics.newFixture(walls.left.body, walls.left.shape);
-
-  walls.right = {};
-  walls.right.body = love.physics.newBody(world, ROOM_WIDTH - WALL_SIZE / 2, ROOM_HEIGHT / 2);
-  walls.right.shape = love.physics.newRectangleShape(WALL_SIZE, ROOM_HEIGHT);
-  walls.right.fixture = love.physics.newFixture(walls.right.body, walls.right.shape);
-
-  walls.up = {};
-  walls.up.body = love.physics.newBody(world, ROOM_WIDTH / 2, WALL_SIZE / 2);
-  walls.up.shape = love.physics.newRectangleShape(ROOM_WIDTH, WALL_SIZE);
-  walls.up.fixture = love.physics.newFixture(walls.up.body, walls.up.shape);
-
-  walls.down = {};
-  walls.down.body = love.physics.newBody(world, ROOM_WIDTH / 2, ROOM_HEIGHT - WALL_SIZE / 2);
-  walls.down.shape = love.physics.newRectangleShape(ROOM_WIDTH, WALL_SIZE);
-  walls.down.fixture = love.physics.newFixture(walls.down.body, walls.down.shape);
+  loadWalls();
 
   letter = {};
   letter.x = SCREEN_WIDTH / 2;
@@ -143,6 +123,30 @@ function setFullscreen(fullscreen)
   CANVAS_SCALE = math.min(scaleX, scaleY);
   CANVAS_OFFSET_X = w / 2 - (SCREEN_WIDTH * CANVAS_SCALE) / 2;
   CANVAS_OFFSET_Y = h / 2 - (SCREEN_HEIGHT * CANVAS_SCALE) / 2;
+end
+
+function loadWalls()
+  walls = {};
+	
+  walls.left = {};
+  walls.left.body = love.physics.newBody(world, WALL_SIZE / 2, ROOM_HEIGHT / 2);
+  walls.left.shape = love.physics.newRectangleShape(WALL_SIZE, ROOM_HEIGHT);
+  walls.left.fixture = love.physics.newFixture(walls.left.body, walls.left.shape);
+
+  walls.right = {};
+  walls.right.body = love.physics.newBody(world, ROOM_WIDTH - WALL_SIZE / 2, ROOM_HEIGHT / 2);
+  walls.right.shape = love.physics.newRectangleShape(WALL_SIZE, ROOM_HEIGHT);
+  walls.right.fixture = love.physics.newFixture(walls.right.body, walls.right.shape);
+
+  walls.up = {};
+  walls.up.body = love.physics.newBody(world, ROOM_WIDTH / 2, WALL_SIZE / 2);
+  walls.up.shape = love.physics.newRectangleShape(ROOM_WIDTH, WALL_SIZE);
+  walls.up.fixture = love.physics.newFixture(walls.up.body, walls.up.shape);
+
+  walls.down = {};
+  walls.down.body = love.physics.newBody(world, ROOM_WIDTH / 2, ROOM_HEIGHT - WALL_SIZE / 2);
+  walls.down.shape = love.physics.newRectangleShape(ROOM_WIDTH, WALL_SIZE);
+  walls.down.fixture = love.physics.newFixture(walls.down.body, walls.down.shape);
 end
 
 function love.focus(f)
