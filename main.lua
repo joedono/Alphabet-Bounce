@@ -3,8 +3,9 @@ Class = require "lib/hump/class";
 
 require "lib/general";
 
-require "constants";
+require "config/constants";
 require "player";
+require "letter";
 
 function love.load()
   setFullscreen(FULLSCREEN);
@@ -15,22 +16,14 @@ function love.load()
   love.physics.setMeter(64);
   world = love.physics.newWorld(0, 9.8 * 128, true);
 
-  loadWalls();
-
-  letter = {};
-  letter.x = SCREEN_WIDTH / 2;
-  letter.y = 280;
-  letter.r = 200;
-  letter.color = { 1, 0, 0 };
-  letter.offset = 0;
-  letter.visible = false;
-  letter.curLetter = "I";
+  local source = love.filesystem.load("config/room.lua")();
+  roomWidth = source.width * source.tilewidth;
+  roomHeight = source.height * source.tileheight;
+  loadWalls(source);
 
   paused = false;
-  displayFont = love.graphics.newFont(500);
   hudFont = love.graphics.newFont(12);
   score = 0;
-  letterTimer = LETTER_TIMER;
 
   pickupSounds = {
     ["A"] = love.audio.newSource("asset/sound/A.wav", "static"),
@@ -72,36 +65,8 @@ function love.load()
 
   star = love.graphics.newImage("asset/image/star.png");
 
-  axisValue = 0;
-
-  system = love.graphics.newParticleSystem(star, 1000);
-  system:setPosition(letter.x, letter.y);
-  system:setEmissionArea("uniform", letter.r, letter.r);
-  system:setParticleLifetime(1, 2);
-  system:setSpeed(10, 300);
-  system:setSpread(math.pi * 2);
-  system:setColors(
-    0, 1, 1, 1,
-    0, 1, 1, 0.75,
-    1, 1, 0, 0.5,
-    1, 0, 1, 0.25,
-    0, 0, 0, 0
-  );
-
-  jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
-  jumpSound:setVolume(0.3);
-
-  jumpSystem = love.graphics.newParticleSystem(star, 500);
-  jumpSystem:setParticleLifetime(0.3, 0.5);
-  jumpSystem:setSpeed(100, 300);
-  jumpSystem:setSpread(math.pi * 2);
-  jumpSystem:setSizes(0.6);
-  jumpSystem:setColors(
-    1, 1, 0, 1,
-    1, 0, 0, 0
-  );
-
-  player = Player(world, jumpSound, jumpSystem);
+  player = Player(world, star);
+  letter = Letter(star);
   camera = Camera(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 end
 
@@ -125,28 +90,22 @@ function setFullscreen(fullscreen)
   CANVAS_OFFSET_Y = h / 2 - (SCREEN_HEIGHT * CANVAS_SCALE) / 2;
 end
 
-function loadWalls()
+function loadWalls(source)
   walls = {};
-	
-  walls.left = {};
-  walls.left.body = love.physics.newBody(world, WALL_SIZE / 2, ROOM_HEIGHT / 2);
-  walls.left.shape = love.physics.newRectangleShape(WALL_SIZE, ROOM_HEIGHT);
-  walls.left.fixture = love.physics.newFixture(walls.left.body, walls.left.shape);
+  local wallsSource;
+  for index, layer in pairs(source.layers) do
+    if layer.name == "Walls" then
+      wallsSource = layer.objects;
+    end
+  end
 
-  walls.right = {};
-  walls.right.body = love.physics.newBody(world, ROOM_WIDTH - WALL_SIZE / 2, ROOM_HEIGHT / 2);
-  walls.right.shape = love.physics.newRectangleShape(WALL_SIZE, ROOM_HEIGHT);
-  walls.right.fixture = love.physics.newFixture(walls.right.body, walls.right.shape);
-
-  walls.up = {};
-  walls.up.body = love.physics.newBody(world, ROOM_WIDTH / 2, WALL_SIZE / 2);
-  walls.up.shape = love.physics.newRectangleShape(ROOM_WIDTH, WALL_SIZE);
-  walls.up.fixture = love.physics.newFixture(walls.up.body, walls.up.shape);
-
-  walls.down = {};
-  walls.down.body = love.physics.newBody(world, ROOM_WIDTH / 2, ROOM_HEIGHT - WALL_SIZE / 2);
-  walls.down.shape = love.physics.newRectangleShape(ROOM_WIDTH, WALL_SIZE);
-  walls.down.fixture = love.physics.newFixture(walls.down.body, walls.down.shape);
+  for index, wallSource in pairs(wallsSource) do
+    local wall = {};
+    wall.body = love.physics.newBody(world, wallSource.x + wallSource.width / 2, wallSource.y + wallSource.height / 2);
+    wall.shape = love.physics.newRectangleShape(wallSource.width, wallSource.height);
+    wall.fixture = love.physics.newFixture(wall.body, wall.shape);
+    table.insert(walls, wall);
+  end
 end
 
 function love.focus(f)
@@ -243,40 +202,15 @@ function love.update(dt)
     return;
   end
 
-  -- Run letterTimer
-  if letterTimer > 0 and not letter.visible then
-    letterTimer = letterTimer - dt;
-  end
-
-  -- Show new letter
-  if letterTimer <= 0 then
-    local index = math.random(string.len(ALPHABET));
-    letter.curLetter = string.sub(ALPHABET, index, index);
-    letter.visible = true;
-    letterTimer = LETTER_TIMER;
-    letter.offset = math.random(-ROOM_WIDTH / 3, ROOM_WIDTH / 3);
-    letter.color = { math.random(), math.random(), math.random() };
-    system:setPosition(letter.x + letter.offset, letter.y);
-  end
-
-  -- Check for letter pickup
-  if letter.visible then
-    local dx = player.body:getX() - letter.x - letter.offset;
-    local dy = player.body:getY() - letter.y;
-    local distance = math.sqrt (dx * dx + dy * dy);
-
-    if distance <= letter.r then
-      letter.visible = false;
-      score = score + 1;
-      system:emit(1000);
-      pickupSounds[letter.curLetter]:play();
-    end
-  end
-
+  letter:update(dt);
   player:update(dt);
   updateCamera();
 
-  system:update(dt);
+  if letter:tryPickup(player.body:getX(), player.body:getY()) then
+    score = score + 1;
+    pickupSounds[letter.curLetter]:play();
+  end
+
   world:update(dt);
 end
 
@@ -290,8 +224,8 @@ function updateCamera()
   cameraX = cameraX - SCREEN_WIDTH / 2;
   cameraY = cameraY - SCREEN_HEIGHT / 2;
 
-  cameraX = math.clamp(cameraX, 0, ROOM_WIDTH - SCREEN_WIDTH);
-  cameraY = math.clamp(cameraY, 0, ROOM_HEIGHT - SCREEN_HEIGHT);
+  cameraX = math.clamp(cameraX, 0, roomWidth - SCREEN_WIDTH);
+  cameraY = math.clamp(cameraY, 0, roomHeight - SCREEN_HEIGHT);
 
   camera:lookAt(cameraX + SCREEN_WIDTH / 2, cameraY + SCREEN_HEIGHT / 2);
 end
@@ -305,22 +239,11 @@ function love.draw()
 
     -- Draw Walls
     love.graphics.setColor(0, 1, 0);
-    love.graphics.polygon("fill", walls.left.body:getWorldPoints(walls.left.shape:getPoints()));
-    love.graphics.polygon("fill", walls.right.body:getWorldPoints(walls.right.shape:getPoints()));
-    love.graphics.polygon("fill", walls.up.body:getWorldPoints(walls.up.shape:getPoints()));
-    love.graphics.polygon("fill", walls.down.body:getWorldPoints(walls.down.shape:getPoints()));
+    for index, wall in pairs(walls) do
+      love.graphics.polygon("fill", wall.body:getWorldPoints(wall.shape:getPoints()));
+		end
 
-    -- Draw Letter
-    if letter.visible then
-      love.graphics.setFont(displayFont);
-      love.graphics.setColor(letter.color);
-      love.graphics.printf(letter.curLetter, letter.offset, 0, SCREEN_WIDTH, "center");
-    end
-
-    love.graphics.setColor(1, 1, 1);
-    love.graphics.draw(system, 0, 0);
-
-    -- Draw Ball
+    letter:draw();
     player:draw();
 
     camera:detach();

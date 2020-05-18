@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="75" height="28" tilewidth="32" tileheight="32" nextobjectid="5">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="200" height="75" tilewidth="12" tileheight="12" nextobjectid="5">
  <objectgroup name="Walls">
-  <object id="1" x="0" y="32" width="32" height="832"/>
-  <object id="2" x="2368" y="32" width="32" height="832"/>
-  <object id="3" x="0" y="0" width="2400" height="32"/>
-  <object id="4" x="0" y="864" width="2400" height="32"/>
+  <object id="1" x="0" y="0" width="2400" height="36"/>
+  <object id="2" x="0" y="864" width="2400" height="36"/>
+  <object id="3" x="0" y="36" width="36" height="828"/>
+  <object id="4" x="2364" y="36" width="36" height="828"/>
  </objectgroup>
 </map>

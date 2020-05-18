@@ -1,5 +1,5 @@
 Player = Class {
-  init = function(self, world, jumpSound, jumpSystem)
+  init = function(self, world, star)
     self.body = love.physics.newBody(world, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "dynamic");
     self.shape = love.physics.newCircleShape(BALL_SIZE);
     self.fixture = love.physics.newFixture(self.body, self.shape);
@@ -10,8 +10,18 @@ Player = Class {
     self.leftPressed = false;
     self.rightPressed = false;
 
-    self.jumpSound = jumpSound;
-    self.jumpSystem = jumpSystem;
+    self.jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
+    self.jumpSound:setVolume(0.3);
+
+    self.jumpSystem = love.graphics.newParticleSystem(star, 500);
+    self.jumpSystem:setParticleLifetime(0.3, 0.5);
+    self.jumpSystem:setSpeed(100, 300);
+    self.jumpSystem:setSpread(math.pi * 2);
+    self.jumpSystem:setSizes(0.6);
+    self.jumpSystem:setColors(
+      1, 1, 0, 1,
+      1, 0, 0, 0
+    );
   end
 }
 
@@ -48,7 +58,7 @@ function Player:draw()
   love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius());
 
   love.graphics.setColor(1, 1, 1);
-  love.graphics.draw(jumpSystem, 0, 0);
+  love.graphics.draw(self.jumpSystem, 0, 0);
 end
 
 function Player:drawDebug()
