@@ -12,6 +12,8 @@ Player = Class {
     self.leftPressed = false;
     self.rightPressed = false;
 
+    self.blinkTimer = BLINK_TIMER;
+
     self.jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
     self.jumpSound:setVolume(0.3);
 
