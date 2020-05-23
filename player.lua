@@ -4,6 +4,8 @@ Player = Class {
     self.shape = love.physics.newCircleShape(BALL_SIZE);
     self.fixture = love.physics.newFixture(self.body, self.shape);
     self.fixture:setRestitution(0.3);
+    self.fixture:setDensity(0.3);
+    self.body:resetMassData();
     self.velocity = 0;
     self.gamepadVelocity = 0;
 
