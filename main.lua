@@ -164,7 +164,7 @@ function love.keyreleased(key, unicode)
 end
 
 function love.gamepadpressed(joystick, button)
-  if button == GAMEPAD_QUIT and leftPressed then
+  if button == GAMEPAD_QUIT and player.leftPressed then
     love.event.quit();
   end
 
