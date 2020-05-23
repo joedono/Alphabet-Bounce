@@ -1,4 +1,5 @@
 Class = require "lib/hump/class";
+Vector = require "lib/hump/vector";
 
 require "lib/general";
 
@@ -121,7 +122,7 @@ function loadSpawns(source)
       x = spawnSource.x,
       y = spawnSource.y
     };
-    
+
     table.insert(spawns, spawn);
   end
 end
@@ -177,7 +178,7 @@ function love.gamepadpressed(joystick, button)
 
   if button == GAMEPAD_A or
     button == GAMEPAD_B or
-    button == GAMEPAD_X or 
+    button == GAMEPAD_X or
     button == GAMEPAD_Y or
     button == GAMEPAD_LEFT_STICK or
     button == GAMEPAD_RIGHT_STICK or
@@ -243,7 +244,7 @@ function love.draw()
 		end
 
     letter:draw();
-    player:draw();
+    player:draw(letter);
 
     player:drawDebug();
   end);

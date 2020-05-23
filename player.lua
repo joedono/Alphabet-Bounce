@@ -55,9 +55,27 @@ function Player:update(dt)
   self.jumpSystem:update(dt);
 end
 
-function Player:draw()
+function Player:draw(letter)
   love.graphics.setColor(1, 0, 0);
   love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius());
+
+  love.graphics.setColor(1, 1, 1);
+  love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius() * 2/3);
+
+  love.graphics.setColor(0, 0, 0);
+  if letter.visible then
+    local px = self.body:getX();
+    local py = self.body:getY();
+    local lx = letter.x;
+    local ly = letter.y;
+
+    v = Vector(lx - px, ly - py);
+    v:normalizeInplace();
+    v = v * self.shape:getRadius() / 3;
+    love.graphics.circle("fill", px + v.x, py + v.y, self.shape:getRadius() / 4);
+  else
+    love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius() / 4);
+  end
 
   love.graphics.setColor(1, 1, 1);
   love.graphics.draw(self.jumpSystem, 0, 0);
