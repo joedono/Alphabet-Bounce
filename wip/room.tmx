@@ -5,22 +5,7 @@
   <object id="2" x="0" y="890" width="1600" height="10"/>
   <object id="3" x="0" y="10" width="10" height="880"/>
   <object id="4" x="1590" y="10" width="10" height="880"/>
-  <object id="6" x="10" y="750" width="210" height="10"/>
-  <object id="8" x="340" y="750" width="270" height="10"/>
-  <object id="12" x="730" y="750" width="480" height="10"/>
-  <object id="18" x="1310" y="620" width="280" height="10"/>
-  <object id="19" x="840" y="620" width="260" height="10"/>
-  <object id="23" x="10" y="480" width="270" height="10"/>
-  <object id="25" x="110" y="600" width="200" height="10"/>
-  <object id="28" x="410" y="630" width="140" height="10"/>
-  <object id="36" x="610" y="490" width="430" height="10"/>
-  <object id="45" x="1180" y="460" width="270" height="10"/>
-  <object id="47" x="380" y="310" width="480" height="10"/>
-  <object id="50" x="1310" y="250" width="280" height="10"/>
-  <object id="52" x="1060" y="140" width="260" height="10"/>
-  <object id="55" x="270" y="150" width="260" height="10"/>
-  <object id="59" x="740" y="110" width="150" height="10"/>
-  <object id="61" x="40" y="190" width="120" height="10"/>
+  <object id="36" x="360" y="500" width="880" height="10"/>
  </objectgroup>
  <objectgroup color="#ff0000" name="Spawns">
   <object id="62" x="100" y="140"/>
