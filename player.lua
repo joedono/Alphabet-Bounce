@@ -41,6 +41,11 @@ end
 function Player:update(dt)
   self.velocity = 0;
 
+  self.blinkTimer = self.blinkTimer - dt;
+  if self.blinkTimer < -0.3 then
+    self.blinkTimer = BLINK_TIMER;
+  end
+
   if self.leftPressed then
     self.velocity = self.velocity - BALL_SPEED;
   end
@@ -61,26 +66,28 @@ function Player:draw(letter)
   love.graphics.setColor(1, 0, 0);
   love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius());
 
-  love.graphics.setColor(1, 1, 1);
-  love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius() * 2/3);
+  if self.blinkTimer > 0 then
+    love.graphics.setColor(1, 1, 1);
+    love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius() * 2/3);
 
-  love.graphics.setColor(0, 0, 0);
-  if letter.visible then
-    local px = self.body:getX();
-    local py = self.body:getY();
-    local lx = letter.x;
-    local ly = letter.y;
+    love.graphics.setColor(0, 0, 0);
+    if letter.visible then
+      local px = self.body:getX();
+      local py = self.body:getY();
+      local lx = letter.x;
+      local ly = letter.y;
 
-    v = Vector(lx - px, ly - py);
-    v:normalizeInplace();
-    v = v * self.shape:getRadius() / 3;
-    love.graphics.circle("fill", px + v.x, py + v.y, self.shape:getRadius() / 4);
-  else
-    love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius() / 4);
+      v = Vector(lx - px, ly - py);
+      v:normalizeInplace();
+      v = v * self.shape:getRadius() / 3;
+      love.graphics.circle("fill", px + v.x, py + v.y, self.shape:getRadius() / 4);
+    else
+      love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius() / 4);
+    end
+
+    love.graphics.setColor(1, 1, 1);
+    love.graphics.draw(self.jumpSystem, 0, 0);
   end
-
-  love.graphics.setColor(1, 1, 1);
-  love.graphics.draw(self.jumpSystem, 0, 0);
 end
 
 function Player:drawDebug()
