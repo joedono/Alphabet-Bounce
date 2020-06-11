@@ -20,7 +20,7 @@ Player = Class {
 
     self.flamethrowerSound = love.audio.newSource("asset/sound/flamethrower.wav", "static");
     self.flamethrowerSound:setLooping(true);
-    self.flamethrowerSound:setVolume(0.3);
+    self.flamethrowerSound:setVolume(0.05);
 
     self.jumpSystem = love.graphics.newParticleSystem(star, 1000);
     self.jumpSystem:setParticleLifetime(0.3, 0.5);
