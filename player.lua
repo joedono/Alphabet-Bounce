@@ -8,6 +8,7 @@ Player = Class {
     self.body:resetMassData();
     self.velocity = 0;
     self.gamepadVelocity = 0;
+    self.facing = 1;
 
     self.leftPressed = false;
     self.rightPressed = false;
@@ -17,14 +18,24 @@ Player = Class {
     self.jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
     self.jumpSound:setVolume(0.3);
 
-    self.jumpSystem = love.graphics.newParticleSystem(star, 500);
+    self.jumpSystem = love.graphics.newParticleSystem(star, 1000);
     self.jumpSystem:setParticleLifetime(0.3, 0.5);
     self.jumpSystem:setSpeed(100, 300);
     self.jumpSystem:setSpread(math.pi * 2);
     self.jumpSystem:setSizes(0.3);
     self.jumpSystem:setColors(
-      1, 1, 0, 1,
-      1, 0, 0, 0
+      1, 0, 1, 1,
+      0, 1, 0, 0
+    );
+
+    self.fireSystem = love.graphics.newParticleSystem(star, 1000);
+    self.fireSystem:setParticleLifetime(0.3, 0.7);
+    self.fireSystem:setSpeed(1, 900);
+    self.fireSystem:setSpread(math.pi * 1/3);
+    self.fireSystem:setSizes(0.3);
+    self.fireSystem:setColors(
+      1, 0, 0, 1,
+      1, 1, 0, 0.3
     );
   end
 }
@@ -36,6 +47,16 @@ function Player:jump()
 
   self.jumpSystem:setPosition(self.body:getX(), self.body:getY() + self.shape:getRadius());
   self.jumpSystem:emit(100);
+end
+
+function Player:fire()
+  if self.facing == 1 then
+    self.fireSystem:setDirection(0);
+  else
+    self.fireSystem:setDirection(math.pi);
+  end
+
+  self.fireSystem:emit(250);
 end
 
 function Player:update(dt)
@@ -60,6 +81,7 @@ function Player:update(dt)
 
   self.body:applyForce(self.velocity, 0);
   self.jumpSystem:update(dt);
+  self.fireSystem:update(dt);
 end
 
 function Player:draw(letter)
@@ -87,6 +109,7 @@ function Player:draw(letter)
 
     love.graphics.setColor(1, 1, 1);
     love.graphics.draw(self.jumpSystem, 0, 0);
+    love.graphics.draw(self.fireSystem, self.body:getX(), self.body:getY());
   end
 end
 

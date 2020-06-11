@@ -5,6 +5,7 @@ SCREEN_HEIGHT = 900;
 KEY_LEFT = "left";
 KEY_RIGHT = "right";
 KEY_JUMP = "a";
+KEY_FIRE = "s";
 KEY_QUIT = "escape";
 
 GAMEPAD_LEFT = "dpleft";

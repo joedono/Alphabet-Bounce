@@ -142,14 +142,20 @@ function love.keypressed(key, unicode)
 
   if key == KEY_LEFT then
     player.leftPressed = true;
+    player.facing = -1;
   end
 
   if key == KEY_RIGHT then
     player.rightPressed = true;
+    player.facing = 1;
   end
 
   if key == KEY_JUMP then
     player:jump();
+  end
+
+  if key == KEY_FIRE then
+    player:fire();
   end
 end
 
@@ -170,14 +176,15 @@ function love.gamepadpressed(joystick, button)
 
   if button == GAMEPAD_LEFT then
     player.leftPressed = true;
+    player.facing = -1;
   end
 
   if button == GAMEPAD_RIGHT then
     player.rightPressed = true;
+    player.facing = 1;
   end
 
   if button == GAMEPAD_A or
-    button == GAMEPAD_B or
     button == GAMEPAD_X or
     button == GAMEPAD_Y or
     button == GAMEPAD_LEFT_STICK or
@@ -185,6 +192,10 @@ function love.gamepadpressed(joystick, button)
     button == GAMEPAD_LEFT_SHOULDER or
     button == GAMEPAD_RIGHT_SHOULDER then
       player:jump();
+  end
+
+  if button == GAMEPAD_B then
+    player:fire();
   end
 end
 
@@ -202,6 +213,11 @@ function love.gamepadaxis(joystick, axis, value)
   if axis == "leftx" or axis == "rightx" then
     if math.abs(value) > GAMEPAD_DEADZONE then
       player.gamepadVelocity = value * BALL_SPEED;
+      if value < 0 then
+        player.facing = -1;
+      elseif value > 0 then
+        player.facing = 1;
+      end
     else
       player.gamepadVelocity = 0;
     end
