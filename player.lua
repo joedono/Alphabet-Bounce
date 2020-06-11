@@ -18,6 +18,9 @@ Player = Class {
     self.jumpSound = love.audio.newSource("asset/sound/jump.wav", "static");
     self.jumpSound:setVolume(0.3);
 
+    self.flamethrowerSound = love.audio.newSource("asset/sound/flamethrower.wav", "static");
+    self.flamethrowerSound:setVolume(0.3);
+
     self.jumpSystem = love.graphics.newParticleSystem(star, 1000);
     self.jumpSystem:setParticleLifetime(0.3, 0.5);
     self.jumpSystem:setSpeed(100, 300);
@@ -56,6 +59,8 @@ function Player:fire()
     self.fireSystem:setDirection(math.pi);
   end
 
+  self.flamethrowerSound:stop();
+  self.flamethrowerSound:play();
   self.fireSystem:emit(250);
 end
 
@@ -106,11 +111,11 @@ function Player:draw(letter)
     else
       love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius() / 4);
     end
-
-    love.graphics.setColor(1, 1, 1);
-    love.graphics.draw(self.jumpSystem, 0, 0);
-    love.graphics.draw(self.fireSystem, self.body:getX(), self.body:getY());
   end
+
+  love.graphics.setColor(1, 1, 1);
+  love.graphics.draw(self.jumpSystem, 0, 0);
+  love.graphics.draw(self.fireSystem, self.body:getX(), self.body:getY());
 end
 
 function Player:drawDebug()
