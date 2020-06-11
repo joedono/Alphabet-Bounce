@@ -102,8 +102,26 @@ function loadWalls(source)
   for index, wallSource in pairs(wallsSource) do
     local wall = {};
     wall.body = love.physics.newBody(world, wallSource.x + wallSource.width / 2, wallSource.y + wallSource.height / 2);
+    wall.body:setType("kinematic");
     wall.shape = love.physics.newRectangleShape(wallSource.width, wallSource.height);
     wall.fixture = love.physics.newFixture(wall.body, wall.shape);
+    wall.type = wallSource.type;
+
+    if wall.type == "Moving" then
+      wall.startPos = {
+        x = wallSource.properties["StartX"],
+        y = wallSource.properties["StartY"]
+      };
+
+      wall.endPos = {
+        x = wallSource.properties["EndX"],
+        y = wallSource.properties["EndY"]
+      };
+
+      wall.movingDir = true;
+      wall.moveTimer = 0;
+    end
+
     table.insert(walls, wall);
   end
 end
@@ -245,7 +263,35 @@ function love.update(dt)
     pickupSounds[letter.curLetter]:play();
   end
 
+  moveWalls(dt);
   world:update(dt);
+end
+
+function moveWalls(dt)
+  for index, wall in pairs(walls) do
+    if wall.type == "Moving" then
+      wall.moveTimer = wall.moveTimer + dt;
+
+      if wall.moveTimer > WALL_MOVE_TIMER then
+        wall.moveTimer = 0;
+        wall.moving = not wall.moving;
+      end
+
+      local progress = wall.moveTimer / WALL_MOVE_TIMER;
+      local x = 0;
+      local y = 0;
+
+      if wall.moving then
+        x = lerp(wall.startPos.x, wall.endPos.x, progress);
+        y = lerp(wall.startPos.y, wall.endPos.y, progress);
+      else
+        x = lerp(wall.endPos.x, wall.startPos.x, progress);
+        y = lerp(wall.endPos.y, wall.startPos.y, progress);
+      end
+
+      wall.body:setPosition(x, y);
+    end
+  end
 end
 
 function love.draw()

@@ -8,7 +8,7 @@ return {
   height = 90,
   tilewidth = 10,
   tileheight = 10,
-  nextobjectid = 90,
+  nextobjectid = 92,
   properties = {},
   tilesets = {},
   layers = {
@@ -25,7 +25,7 @@ return {
         {
           id = 1,
           name = "",
-          type = "",
+          type = "Static",
           shape = "rectangle",
           x = 0,
           y = 0,
@@ -38,7 +38,7 @@ return {
         {
           id = 2,
           name = "",
-          type = "",
+          type = "Static",
           shape = "rectangle",
           x = 0,
           y = 890,
@@ -51,7 +51,7 @@ return {
         {
           id = 3,
           name = "",
-          type = "",
+          type = "Static",
           shape = "rectangle",
           x = 0,
           y = 10,
@@ -64,7 +64,7 @@ return {
         {
           id = 4,
           name = "",
-          type = "",
+          type = "Static",
           shape = "rectangle",
           x = 1590,
           y = 10,
@@ -77,7 +77,7 @@ return {
         {
           id = 36,
           name = "",
-          type = "",
+          type = "Static",
           shape = "rectangle",
           x = 360,
           y = 500,
@@ -86,6 +86,42 @@ return {
           rotation = 0,
           visible = true,
           properties = {}
+        },
+        {
+          id = 90,
+          name = "",
+          type = "Moving",
+          shape = "rectangle",
+          x = 10,
+          y = 160,
+          width = 350,
+          height = 10,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["EndX"] = 185,
+            ["EndY"] = 735,
+            ["StartX"] = 185,
+            ["StartY"] = 165
+          }
+        },
+        {
+          id = 91,
+          name = "",
+          type = "Moving",
+          shape = "rectangle",
+          x = 1240,
+          y = 730,
+          width = 350,
+          height = 10,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["EndX"] = 1415,
+            ["EndY"] = 165,
+            ["StartX"] = 1415,
+            ["StartY"] = 735
+          }
         }
       }
     },

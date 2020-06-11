@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="160" height="90" tilewidth="10" tileheight="10" nextobjectid="90">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="160" height="90" tilewidth="10" tileheight="10" nextobjectid="92">
  <objectgroup color="#00ff00" name="Walls">
-  <object id="1" x="0" y="0" width="1600" height="10"/>
-  <object id="2" x="0" y="890" width="1600" height="10"/>
-  <object id="3" x="0" y="10" width="10" height="880"/>
-  <object id="4" x="1590" y="10" width="10" height="880"/>
-  <object id="36" x="360" y="500" width="880" height="10"/>
+  <object id="1" type="Static" x="0" y="0" width="1600" height="10"/>
+  <object id="2" type="Static" x="0" y="890" width="1600" height="10"/>
+  <object id="3" type="Static" x="0" y="10" width="10" height="880"/>
+  <object id="4" type="Static" x="1590" y="10" width="10" height="880"/>
+  <object id="36" type="Static" x="360" y="500" width="880" height="10"/>
+  <object id="90" type="Moving" x="10" y="160" width="350" height="10">
+   <properties>
+    <property name="EndX" type="int" value="185"/>
+    <property name="EndY" type="int" value="735"/>
+    <property name="StartX" type="int" value="185"/>
+    <property name="StartY" type="int" value="165"/>
+   </properties>
+  </object>
+  <object id="91" type="Moving" x="1240" y="730" width="350" height="10">
+   <properties>
+    <property name="EndX" type="int" value="1415"/>
+    <property name="EndY" type="int" value="165"/>
+    <property name="StartX" type="int" value="1415"/>
+    <property name="StartY" type="int" value="735"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup color="#ff0000" name="Spawns">
   <object id="62" x="100" y="140"/>
