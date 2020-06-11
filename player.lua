@@ -19,6 +19,7 @@ Player = Class {
     self.jumpSound:setVolume(0.3);
 
     self.flamethrowerSound = love.audio.newSource("asset/sound/flamethrower.wav", "static");
+    self.flamethrowerSound:setLooping(true);
     self.flamethrowerSound:setVolume(0.3);
 
     self.jumpSystem = love.graphics.newParticleSystem(star, 1000);
@@ -31,8 +32,10 @@ Player = Class {
       0, 1, 0, 0
     );
 
-    self.fireSystem = love.graphics.newParticleSystem(star, 1000);
-    self.fireSystem:setParticleLifetime(0.3, 0.7);
+    self.fireSystem = love.graphics.newParticleSystem(star, 10000);
+    self.fireSystem:setEmitterLifetime(-1);
+    self.fireSystem:setEmissionRate(500);
+    self.fireSystem:setParticleLifetime(0.5, 0.7);
     self.fireSystem:setSpeed(1, 900);
     self.fireSystem:setSpread(math.pi * 1/3);
     self.fireSystem:setSizes(0.3);
@@ -52,16 +55,14 @@ function Player:jump()
   self.jumpSystem:emit(100);
 end
 
-function Player:fire()
-  if self.facing == 1 then
-    self.fireSystem:setDirection(0);
+function Player:toggleFire(on)
+  if on then
+    self.flamethrowerSound:play();
+    self.fireSystem:start();
   else
-    self.fireSystem:setDirection(math.pi);
+    self.flamethrowerSound:stop();
+    self.fireSystem:stop();
   end
-
-  self.flamethrowerSound:stop();
-  self.flamethrowerSound:play();
-  self.fireSystem:emit(250);
 end
 
 function Player:update(dt)
@@ -84,12 +85,22 @@ function Player:update(dt)
     self.velocity = self.gamepadVelocity;
   end
 
+  if self.facing == 1 then
+    self.fireSystem:setDirection(0);
+    self.fireSystem:setLinearAcceleration(1000, 0, 2000, 0);
+  else
+    self.fireSystem:setDirection(math.pi);
+    self.fireSystem:setLinearAcceleration(-1000, 0, -2000, 0);
+  end
+
   self.body:applyForce(self.velocity, 0);
   self.jumpSystem:update(dt);
   self.fireSystem:update(dt);
 end
 
 function Player:draw(letter)
+  love.graphics.draw(self.fireSystem, self.body:getX(), self.body:getY());
+
   love.graphics.setColor(1, 0, 0);
   love.graphics.circle("fill", self.body:getX(), self.body:getY(), self.shape:getRadius());
 
@@ -115,7 +126,6 @@ function Player:draw(letter)
 
   love.graphics.setColor(1, 1, 1);
   love.graphics.draw(self.jumpSystem, 0, 0);
-  love.graphics.draw(self.fireSystem, self.body:getX(), self.body:getY());
 end
 
 function Player:drawDebug()

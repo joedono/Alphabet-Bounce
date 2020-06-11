@@ -173,7 +173,7 @@ function love.keypressed(key, unicode)
   end
 
   if key == KEY_FIRE then
-    player:fire();
+    player:toggleFire(true);
   end
 end
 
@@ -184,6 +184,10 @@ function love.keyreleased(key, unicode)
 
   if key == KEY_RIGHT then
     player.rightPressed = false;
+  end
+
+  if key == KEY_FIRE then
+    player:toggleFire(false);
   end
 end
 
@@ -213,7 +217,7 @@ function love.gamepadpressed(joystick, button)
 
   if button == GAMEPAD_X or
     button == GAMEPAD_Y then
-      player:fire();
+      player:toggleFire(true);
   end
 end
 
@@ -224,6 +228,11 @@ function love.gamepadreleased(joystick, button)
 
   if button == GAMEPAD_RIGHT then
     player.rightPressed = false;
+  end
+
+  if button == GAMEPAD_X or
+    button == GAMEPAD_Y then
+      player:toggleFire(false);
   end
 end
 
