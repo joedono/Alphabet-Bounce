@@ -195,7 +195,7 @@ function love.gamepadpressed(joystick, button)
 
   if button == GAMEPAD_X or
     button == GAMEPAD_Y then
-    player:fire();
+      player:fire();
   end
 end
 
