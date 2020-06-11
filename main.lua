@@ -185,8 +185,7 @@ function love.gamepadpressed(joystick, button)
   end
 
   if button == GAMEPAD_A or
-    button == GAMEPAD_X or
-    button == GAMEPAD_Y or
+    button == GAMEPAD_B or
     button == GAMEPAD_LEFT_STICK or
     button == GAMEPAD_RIGHT_STICK or
     button == GAMEPAD_LEFT_SHOULDER or
@@ -194,7 +193,8 @@ function love.gamepadpressed(joystick, button)
       player:jump();
   end
 
-  if button == GAMEPAD_B then
+  if button == GAMEPAD_X or
+    button == GAMEPAD_Y then
     player:fire();
   end
 end
